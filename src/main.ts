@@ -1,3 +1,4 @@
+import { LoggerModule } from './services/logger/logger.module';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
@@ -7,7 +8,8 @@ import * as helmet from 'helmet';
 import { AppModule } from './app.module';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule, { cors: true, logger: false });
+  app.useLogger(app.get(LoggerModule));
   const configService = app.get<ConfigService>(ConfigService);
 
   const port = parseInt(configService.get('PORT')) || 3000;
@@ -27,8 +29,6 @@ async function bootstrap(): Promise<void> {
 
   app.setGlobalPrefix('v1');
 
-  await app
-    .listen(port)
-    .then(data => console.log(`Working on port: ${port} \nApplication data: ${JSON.stringify(data)}`));
+  await app.listen(port);
 }
 bootstrap();

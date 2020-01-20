@@ -1,3 +1,4 @@
+import { LoggerModule } from './services/logger/logger.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -44,6 +45,7 @@ import { AppService } from './app.service';
       }),
       inject: [ConfigService],
     }),
+    LoggerModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
