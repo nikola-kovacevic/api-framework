@@ -1,11 +1,11 @@
-import { logger } from './winston';
 import { Injectable, Scope, Logger } from '@nestjs/common';
+import { logger } from './winston';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class LoggerService extends Logger {
   private prefix?: string;
 
-  private formattedMessage(message: string): string {
+  private format(message: string): string {
     return this.prefix ? `[${this.prefix}] - ${message}` : message;
   }
 
@@ -14,22 +14,22 @@ export class LoggerService extends Logger {
   }
 
   log(message: string): void {
-    logger.info(this.formattedMessage(message));
+    logger.info(this.format(message));
   }
 
   error(message: string, trace: string): void {
-    logger.error(this.formattedMessage(message), trace);
+    logger.error(this.format(message), trace);
   }
 
   warn(message: string): void {
-    logger.alert(this.formattedMessage(message));
+    logger.alert(this.format(message));
   }
 
   debug(message: string): void {
-    logger.debug(this.formattedMessage(message));
+    logger.debug(this.format(message));
   }
 
   verbose(message: string): void {
-    logger.verbose(this.formattedMessage(message));
+    logger.verbose(this.format(message));
   }
 }

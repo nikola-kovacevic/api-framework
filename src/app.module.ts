@@ -7,6 +7,7 @@ import * as Joi from '@hapi/joi';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PublicController } from './controllers/public/public.controller';
 
 @Module({
   imports: [
@@ -47,7 +48,7 @@ import { AppService } from './app.service';
     }),
     LoggerModule.forRoot(),
   ],
-  controllers: [AppController],
+  controllers: [AppController, PublicController],
   providers: [AppService],
 })
 export class AppModule {}
