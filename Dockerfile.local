@@ -1,0 +1,10 @@
+FROM node:lts-alpine as builder
+COPY package*.json ./
+RUN apk add --no-cache --virtual .gyp python make g++
+RUN npm i
+
+FROM node:lts-alpine
+WORKDIR /var/skeleton/api
+COPY tsconfig.* ./
+COPY --from=builder node_modules ./node_modules
+COPY --from=builder package*.json ./

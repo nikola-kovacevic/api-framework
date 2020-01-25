@@ -19,9 +19,9 @@
    - [ ] Listeners for connect and disconnect events
    - [ ] Logging on development environment
 5. Provided Docker images
-   - [ ] MongoDB
-   - [ ] Redis
-   - [ ] Node.js
+   - [x] MongoDB
+   - [x] Redis
+   - [x] Node.js
 6. Request & Response Interceptors
    - [ ] Measure execution time with Performance API
    - [ ] Automated logging of events

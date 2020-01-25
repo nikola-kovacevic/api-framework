@@ -21,6 +21,9 @@ logAuditFile.json
 # Environment
 *.env
 
+# Database
+/data
+
 # IDEs and editors
 /.idea
 .project

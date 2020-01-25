@@ -1,0 +1,46 @@
+version: '3.7'
+services:
+  api:
+    container_name: skeleton-api
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    env_file:
+      - ./.env
+    # environment:
+    #   - MONGO_URI=mongodb://skeleton-db:27017/skeleton
+    #   - CACHE_HOST=skeleton-cache
+    ports:
+      - ${PORT}:${PORT}
+      - 9222:9222
+    volumes:
+      - ./src:/var/skeleton/api/src
+      - ./dist:/var/skeleton/api/dist
+      - ./uploads:/var/skeleton/api/uploads
+    depends_on:
+      - mongo
+      - redis
+    command: npm run start:dev
+
+  mongo:
+    container_name: skeleton-db
+    image: mongo:4.2.2
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: rwUser
+      MONGO_INITDB_ROOT_PASSWORD: 8i0rmOksr3saNvaN
+      MONGO_INITDB_DATABASE: skeleton
+    ports:
+      - 27018:27017
+    volumes:
+      - ./data/db/mongo:/data/db
+    command: --bind_ip_all --port 27017 --quiet
+
+  redis:
+    container_name: skeleton-cache
+    image: redis:5.0-alpine
+    ports:
+      - 6379:6379
+
+networks:
+  default:
+    name: skeleton-api
