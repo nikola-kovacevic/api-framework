@@ -3,23 +3,29 @@
 ## PROVIDED FUNCTIONALITY
 
 1. Winston logs
-   1. Console transport
-   2. File transport
-   3. DB transport
-   4. Correlation for distributed tracking
+   - [x] Console transport
+   - [x] File transport
+   - [ ] DB transport
+   - [x] Correlation for distributed tracking
 2. Morgan logs for HTTP tracking
+   - [x] Implements Morgan
+   - [x] Writes to file
+   - [ ] Daily log file rotation
 3. Cache service
+   - [ ] Redis connection
+   - [ ] Cache mechanism
 4. MongoDB connection
-   1. Listeners for connect and disconnect events
-   2. Logging on development environment
+   - [x] Implements Mongoose connection
+   - [ ] Listeners for connect and disconnect events
+   - [ ] Logging on development environment
 5. Provided Docker images
-   1. MongoDB
-   2. Redis
-   3. Node.js
+   - [ ] MongoDB
+   - [ ] Redis
+   - [ ] Node.js
 6. Request & Response Interceptors
-   1. Measure execution time with Performance API
-   2. Automated logging of events
-   3. Distributed tracing via correlation
+   - [ ] Measure execution time with Performance API
+   - [ ] Automated logging of events
+   - [ ] Distributed tracing via correlation
 
 ## USED ENVIRONMENT VARIABLES
 

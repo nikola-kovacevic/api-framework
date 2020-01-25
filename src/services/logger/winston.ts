@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import * as path from 'path';
+
 import { format, transports, createLogger } from 'winston';
 import { Entropy } from 'entropy-string';
 import 'winston-daily-rotate-file';
@@ -43,8 +45,8 @@ const fileTransport = new transports.DailyRotateFile({
   zippedArchive: true,
   maxSize: '20m',
   maxFiles: '14d',
-  auditFile: `logAuditFile.json`,
-  dirname: 'logs',
+  auditFile: path.join(__dirname, '../../', 'logAuditFile.json'),
+  dirname: path.join(__dirname, '../../', 'logs'),
   format: logFormat,
   handleExceptions: true,
   level: 'warn',

@@ -30,6 +30,7 @@
     "entropy-string": "^4.2.0",
     "helmet": "^3.21.2",
     "mongoose": "^5.8.9",
+    "morgan": "^1.9.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3",

@@ -4,6 +4,10 @@ import { ValidationPipe } from '@nestjs/common';
 
 import * as helmet from 'helmet';
 import * as mongoose from 'mongoose';
+import * as morgan from 'morgan';
+
+import * as fs from 'fs';
+import * as path from 'path';
 
 import { AppModule } from './app.module';
 import { LoggerModule } from './services/logger/logger.module';
@@ -24,6 +28,8 @@ async function bootstrap(): Promise<void> {
     });
   }
 
+  const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
+  app.use(morgan('combined', { stream: accessLogStream }));
   app.use(helmet());
 
   app.useGlobalPipes(
@@ -38,7 +44,6 @@ async function bootstrap(): Promise<void> {
   );
 
   app.setGlobalPrefix('v1');
-
   await app
     .listen(port)
     .then(() => logger.log(`Application is running on port ${port}`))
