@@ -17,7 +17,7 @@ export class DemoService {
   }
 
   updateDemo(_id: string): Promise<Demo> {
-    return this.demoModel.updateOne({ _id }, { name: 'CHANGED' }).exec();
+    return this.demoModel.updateOne({ _id }, { name: `Named Document - ${Math.random()}` }).exec();
   }
 
   addDemo(): Promise<Demo> {

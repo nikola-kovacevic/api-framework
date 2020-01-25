@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, Scope, Logger } from '@nestjs/common';
 import { logger } from './winston';
 
@@ -5,31 +6,48 @@ import { logger } from './winston';
 export class LoggerService extends Logger {
   private prefix?: string;
 
-  private format(message: string): string {
-    return this.prefix ? `[${this.prefix}] - ${message}` : message;
+  constructor(prefix?: string) {
+    super();
+    this.prefix = prefix;
+  }
+
+  private normalize(message: any): string {
+    return message && typeof message === 'string' ? message : `${typeof message}:\n${JSON.stringify(message, null, 2)}`;
+  }
+
+  private format(message: any): string {
+    return this.prefix ? `[${this.prefix}] - ${this.normalize(message)} ` : this.normalize(message) + ' ';
   }
 
   setPrefix(prefix: string): void {
     this.prefix = prefix;
   }
 
-  log(message: string): void {
-    logger.info(this.format(message));
-  }
-
-  error(message: string, trace: string): void {
+  error(message: any, trace?: string): void {
     logger.error(this.format(message), trace);
   }
 
-  warn(message: string): void {
-    logger.alert(this.format(message));
+  warn(message: any, ...meta: any): void {
+    logger.alert(this.format(message), meta);
   }
 
-  debug(message: string): void {
-    logger.debug(this.format(message));
+  log(message: any, ...meta: any): void {
+    logger.info(this.format(message), meta);
   }
 
-  verbose(message: string): void {
-    logger.verbose(this.format(message));
+  http(message: any, ...meta: any): void {
+    logger.http(this.format(message), meta);
+  }
+
+  verbose(message: any, ...meta: any): void {
+    logger.verbose(this.format(message), meta);
+  }
+
+  debug(message: any, ...meta: any): void {
+    logger.debug(this.format(message), meta);
+  }
+
+  silly(message: any, ...meta: any): void {
+    logger.silly(this.format(message), meta);
   }
 }

@@ -1,3 +1,4 @@
+import { LoggerService } from './../../services/logger/logger.service';
 import { Controller, Get, Res } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Response } from 'express';
@@ -14,6 +15,8 @@ export class PublicController {
     private readonly demoService: DemoService,
   ) {}
 
+  logger = new LoggerService('Public');
+
   @Get('health')
   checkHealth(@Res() res: Response): Response {
     return this.connection.readyState === 1
@@ -28,12 +31,10 @@ export class PublicController {
 
   @Get('demo')
   async getDemo(@Res() res: Response): Promise<Response> {
-    for (let i = 0; i < 5; i++) {
-      await this.demoService.removeDemo();
-    }
+    await this.demoService.removeDemo();
     const added = await this.demoService.addDemo();
     const updated = await this.demoService.updateDemo(added._id);
-    console.log(updated);
+    this.logger.log('Updated log', updated);
     return res.status(200).json({ demo: await this.demoService.findAll() });
   }
 }
