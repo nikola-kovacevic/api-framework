@@ -3,7 +3,7 @@ import { Provider } from '@nestjs/common';
 import { prefixesForLoggers } from './logger.decorator';
 import { LoggerService } from './logger.service';
 
-function loggerFactory(logger: LoggerService, prefix: string): LoggerService {
+function loggerFactory(logger: LoggerService, prefix?: string): LoggerService {
   if (prefix) {
     logger.setPrefix(prefix);
   }
