@@ -3,19 +3,21 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 
 import * as helmet from 'helmet';
+import * as mongoose from 'mongoose';
 
 import { AppModule } from './app.module';
 import { LoggerModule } from './services/logger/logger.module';
 import { LoggerService } from './services/logger/logger.service';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, { cors: true, logger: false });
+  const app = await NestFactory.create(AppModule, { cors: true });
   app.useLogger(app.get(LoggerModule));
   const configService = app.get<ConfigService>(ConfigService);
 
+  mongoose.set('debug', configService.get('NODE_ENV') === 'development');
   const port = parseInt(configService.get('PORT')) || 3000;
   const logger = new LoggerService();
-  logger.setPrefix('APPLICATION');
+  logger.setPrefix('Main');
 
   app.use(helmet());
 

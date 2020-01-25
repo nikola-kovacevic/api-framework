@@ -3,14 +3,37 @@ import { InjectConnection } from '@nestjs/mongoose';
 import { Response } from 'express';
 import { Connection } from 'mongoose';
 
+import { DemoService } from './../../models/demo/demo.service';
+import { CountriesService } from './../../models/countries/countries.service';
+
 @Controller('public')
 export class PublicController {
-  constructor(@InjectConnection() private readonly connection: Connection) {}
+  constructor(
+    @InjectConnection() private readonly connection: Connection,
+    private readonly countriesService: CountriesService,
+    private readonly demoService: DemoService,
+  ) {}
 
   @Get('health')
   checkHealth(@Res() res: Response): Response {
     return this.connection.readyState === 1
       ? res.status(200).json({ message: 'APPLICATION AND DATABASE ARE WORKING' })
       : res.status(500).json({ message: 'DATABASE CONNECTION IS NOT WORKING' });
+  }
+
+  @Get('countries')
+  async getCountries(@Res() res: Response): Promise<Response> {
+    return res.status(200).json({ countries: await this.countriesService.findAll() });
+  }
+
+  @Get('demo')
+  async getDemo(@Res() res: Response): Promise<Response> {
+    for (let i = 0; i < 5; i++) {
+      await this.demoService.removeDemo();
+    }
+    const added = await this.demoService.addDemo();
+    const updated = await this.demoService.updateDemo(added._id);
+    console.log(updated);
+    return res.status(200).json({ demo: await this.demoService.findAll() });
   }
 }

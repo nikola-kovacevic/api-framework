@@ -1,4 +1,3 @@
-import { LoggerModule } from './services/logger/logger.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -7,7 +6,9 @@ import * as Joi from '@hapi/joi';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PublicController } from './controllers/public/public.controller';
+
+import { LoggerModule } from './services/logger/logger.module';
+import { PublicModule } from './controllers/public/public.module';
 
 @Module({
   imports: [
@@ -47,8 +48,9 @@ import { PublicController } from './controllers/public/public.controller';
       inject: [ConfigService],
     }),
     LoggerModule.forRoot(),
+    PublicModule,
   ],
-  controllers: [AppController, PublicController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
