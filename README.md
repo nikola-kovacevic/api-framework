@@ -10,14 +10,14 @@
 2. Morgan logs for HTTP tracking
    - [x] Implements Morgan
    - [x] Writes to file
-   - [ ] Daily log file rotation
+   - [x] Daily log file rotation
 3. Cache service
    - [ ] Redis connection
    - [ ] Cache mechanism
 4. MongoDB connection
    - [x] Implements Mongoose connection
    - [ ] Listeners for connect and disconnect events
-   - [ ] Logging on development environment
+   - [x] Logging on development environment
 5. Provided Docker images
    - [x] MongoDB
    - [x] Redis
@@ -26,6 +26,18 @@
    - [ ] Measure execution time with Performance API
    - [ ] Automated logging of events
    - [ ] Distributed tracing via correlation
+7. User management
+   - [ ] JWT token assignment
+   - [ ] Authentication and authorization guards
+   - [ ] Password encryption
+   - [ ] CRUD operations
+8. Log inspection
+   - [ ] Filter and read logs
+   - [ ] Archive logs
+   - [ ] Retention
+9. Mail service
+   - [ ] Mailgun connection
+   - [ ] Email templates (i.e. activation, system message, password reset)
 
 ## USED ENVIRONMENT VARIABLES
 

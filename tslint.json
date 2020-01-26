@@ -30,7 +30,6 @@
     "no-invalid-this": true,
     "no-null-keyword": true,
     "strict-type-predicates": true,
-    "strict-boolean-expressions": [true, "allow-boolean-or-undefined"],
     "no-promise-as-boolean": true,
     "no-return-await": true,
     "no-sparse-arrays": true,

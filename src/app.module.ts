@@ -7,8 +7,8 @@ import * as Joi from '@hapi/joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-import { LoggerModule } from './services/logger/logger.module';
 import { PublicModule } from './controllers/public/public.module';
+import { LoggerModule } from './services/logger/logger.module';
 
 const buildConnectionString = (config: ConfigService): string => {
   const authenticationDatabase = config.get<string>('MONGO_AUTH_DB');

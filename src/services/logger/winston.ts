@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as path from 'path';
 
-import { format, transports, createLogger } from 'winston';
 import { Entropy } from 'entropy-string';
+import { createLogger, format, transports } from 'winston';
 import 'winston-daily-rotate-file';
 
 const getMetadata = (log: object): [] => {
   const SPLAT: string = Symbol.for('splat') as any; // workaround as TypeScript doesn't allow Symbol to be used as a key
   const metadata = log[SPLAT];
   if (metadata && metadata[0] && Array.isArray(metadata[0])) {
-    return metadata[0].map(meta => JSON.stringify(meta, null, 2));
+    return metadata[0].map(meta => JSON.stringify(meta, undefined, 2));
   }
   return [];
 };
@@ -45,8 +45,8 @@ const fileTransport = new transports.DailyRotateFile({
   zippedArchive: true,
   maxSize: '20m',
   maxFiles: '14d',
-  auditFile: path.join(__dirname, '../../', 'logAuditFile.json'),
-  dirname: path.join(__dirname, '../../', 'logs'),
+  auditFile: path.join(__dirname, '../../logs', 'logAuditFile.json'),
+  dirname: path.join(__dirname, '../../logs', 'application'),
   format: logFormat,
   handleExceptions: true,
   level: 'warn',
