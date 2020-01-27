@@ -12,8 +12,9 @@
    - [x] Writes to file
    - [x] Daily log file rotation
 3. Cache service
-   - [ ] Redis connection
-   - [ ] Cache mechanism
+   - [ ] Cache manager
+   - [ ] Redis store
+   - [ ] Cache service
 4. MongoDB connection
    - [x] Implements Mongoose connection
    - [ ] Listeners for connect and disconnect events
@@ -50,6 +51,8 @@ Core API needs following environment variables to function properly.
 | **MONGO_PASSWORD**       | String | database password                        |
 | **MONGO_USER**           | String | database user                            |
 | **APP_NAME**             | String | application name                         |
+| **REDIS_HOST**           | String | Redis host                               |
+| **REDIS_PORT**           | Number | Redis port                               |
 | **CACHE_TTL**            | Number | Cache time to live, specified in seconds |
 | **ENCRYPTION_KEY**       | String | Encryption key                           |
 | **CONTACT_EMAIL**        | String | Contact email                            |

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Injectable, Scope, Logger } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
 import { logger } from './winston';
 
 @Injectable({ scope: Scope.TRANSIENT })
@@ -9,14 +9,6 @@ export class LoggerService extends Logger {
   constructor(prefix?: string) {
     super();
     this.prefix = prefix;
-  }
-
-  private normalize(message: any): string {
-    return message && typeof message === 'string' ? message : `${typeof message}:\n${JSON.stringify(message, null, 2)}`;
-  }
-
-  private format(message: any): string {
-    return this.prefix ? `[${this.prefix}] - ${this.normalize(message)} ` : this.normalize(message) + ' ';
   }
 
   setPrefix(prefix: string): void {
@@ -49,5 +41,15 @@ export class LoggerService extends Logger {
 
   silly(message: any, ...meta: any): void {
     logger.silly(this.format(message), meta);
+  }
+
+  private format(message: any): string {
+    return this.prefix ? `[${this.prefix}] - ${this.normalize(message)} ` : this.normalize(message) + ' ';
+  }
+
+  private normalize(message: any): string {
+    return message && typeof message === 'string'
+      ? message
+      : `${typeof message}:\n${JSON.stringify(message, undefined, 2)}`;
   }
 }

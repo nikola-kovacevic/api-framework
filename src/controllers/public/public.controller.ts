@@ -1,21 +1,22 @@
-import { LoggerService } from './../../services/logger/logger.service';
 import { Controller, Get, Res } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
+
 import { Response } from 'express';
 import { Connection } from 'mongoose';
 
-import { DemoService } from './../../models/demo/demo.service';
 import { CountriesService } from './../../models/countries/countries.service';
+import { DemoService } from './../../models/demo/demo.service';
+import { LoggerService } from './../../services/logger/logger.service';
 
 @Controller('public')
 export class PublicController {
+  logger = new LoggerService('Public');
+
   constructor(
     @InjectConnection() private readonly connection: Connection,
     private readonly countriesService: CountriesService,
     private readonly demoService: DemoService,
   ) {}
-
-  logger = new LoggerService('Public');
 
   @Get('health')
   checkHealth(@Res() res: Response): Response {

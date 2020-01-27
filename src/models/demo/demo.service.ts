@@ -1,6 +1,7 @@
-import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+
+import { Model } from 'mongoose';
 
 import { Demo } from './demo.interface';
 
@@ -16,8 +17,8 @@ export class DemoService {
     return this.demoModel.deleteOne({}).exec();
   }
 
-  updateDemo(_id: string): Promise<Demo> {
-    return this.demoModel.updateOne({ _id }, { name: `Named Document - ${Math.random()}` }).exec();
+  updateDemo(id: string): Promise<Demo> {
+    return this.demoModel.updateOne({ _id: id }, { name: `Named Document - ${Math.random()}` }).exec();
   }
 
   addDemo(): Promise<Demo> {

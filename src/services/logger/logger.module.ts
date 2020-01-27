@@ -1,7 +1,7 @@
 import { DynamicModule } from '@nestjs/common';
 
-import { LoggerService } from './logger.service';
 import { createLoggerProviders } from './logger.providers';
+import { LoggerService } from './logger.service';
 
 export class LoggerModule {
   static forRoot(): DynamicModule {
