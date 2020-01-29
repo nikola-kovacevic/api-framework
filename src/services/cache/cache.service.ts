@@ -32,9 +32,16 @@ export class CacheService {
     }
   }
 
-  async manualConnect(): Promise<unknown> {
+  async connect(): Promise<unknown> {
     if (!this.isRedisAvailable) {
       return this.redis.connect();
+    }
+  }
+
+  async disconnect(): Promise<unknown> {
+    if (this.isRedisAvailable) {
+      this.isRedisAvailable = false;
+      return this.redis.disconnect();
     }
   }
 
