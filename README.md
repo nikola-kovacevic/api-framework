@@ -12,9 +12,9 @@
    - [x] Writes to file
    - [x] Daily log file rotation
 3. Cache service
-   - [ ] Cache manager
-   - [ ] Redis store
-   - [ ] Cache service
+   - [x] Cache manager
+   - [x] Redis store
+   - [x] Cache service
 4. MongoDB connection
    - [x] Implements Mongoose connection
    - [ ] Listeners for connect and disconnect events
@@ -36,9 +36,16 @@
    - [ ] Filter and read logs
    - [ ] Archive logs
    - [ ] Retention
-9. Mail service
-   - [ ] Mailgun connection
-   - [ ] Email templates (i.e. activation, system message, password reset)
+9. Administrative application management
+   - [ ] Manually clear cache
+   - [ ] Manually connect to Redis
+   - [ ] Manually disconnect from Redis
+10. Mail service
+    - [ ] Mailgun connection
+    - [ ] Email templates (i.e. activation, system message, password reset)
+11. Translate service
+    - [ ] Get's the translation from DB / or file
+    - [ ] Returns default language translation if none found
 
 ## USED ENVIRONMENT VARIABLES
 
