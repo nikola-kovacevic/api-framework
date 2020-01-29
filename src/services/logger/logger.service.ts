@@ -20,7 +20,7 @@ export class LoggerService extends Logger {
   }
 
   warn(message: any, ...meta: any): void {
-    logger.alert(this.format(message), meta);
+    logger.warn(this.format(message), meta);
   }
 
   log(message: any, ...meta: any): void {
