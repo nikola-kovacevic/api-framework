@@ -5,7 +5,8 @@ import { Response } from 'express';
 import { Connection } from 'mongoose';
 
 import { CountriesService } from './../../models/countries/countries.service';
-import { DemoService } from './../../models/demo/demo.service';
+import { User } from './../../models/users/user.interface';
+import { UserService } from './../../models/users/user.service';
 import { LoggerService } from './../../services/logger/logger.service';
 
 @Controller('public')
@@ -15,7 +16,7 @@ export class PublicController {
   constructor(
     @InjectConnection() private readonly connection: Connection,
     private readonly countriesService: CountriesService,
-    private readonly demoService: DemoService,
+    private readonly userService: UserService,
   ) {}
 
   @Get('health')
@@ -31,11 +32,7 @@ export class PublicController {
   }
 
   @Get('demo')
-  async getDemo(@Res() res: Response): Promise<Response> {
-    await this.demoService.removeDemo();
-    const added = await this.demoService.addDemo();
-    const updated = await this.demoService.updateDemo(added._id);
-    this.logger.log('Updated log', updated);
-    return res.status(200).json({ demo: await this.demoService.findAll() });
+  async getDemo(): Promise<User[]> {
+    return this.userService.find({}, '-password -salt');
   }
 }

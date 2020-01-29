@@ -3,18 +3,18 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { CountriesSchema } from '../../models/countries/countries.model';
 import { CountriesService } from '../../models/countries/countries.service';
-import { DemoSchema } from './../../models/demo/demo.model';
-import { DemoService } from './../../models/demo/demo.service';
+import { UserSchema } from './../../models/users/user.model';
+import { UserService } from './../../models/users/user.service';
 import { PublicController } from './public.controller';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: 'Country', schema: CountriesSchema },
-      { name: 'Demo', schema: DemoSchema },
+      { name: 'User', schema: UserSchema },
     ]),
   ],
-  providers: [CountriesService, DemoService],
+  providers: [CountriesService, UserService],
   controllers: [PublicController],
 })
 export class PublicModule {}
