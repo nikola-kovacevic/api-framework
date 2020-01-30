@@ -1,4 +1,4 @@
-# API skeleton structure for SaaS projects
+# API framework structure for SaaS projects
 
 ## PROVIDED FUNCTIONALITY
 

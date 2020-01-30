@@ -4,7 +4,7 @@ RUN apk add --no-cache --virtual .gyp python make g++
 RUN npm i
 
 FROM node:lts-alpine
-WORKDIR /var/skeleton/api
+WORKDIR /var/framework/api
 COPY tsconfig.* ./
 COPY --from=builder node_modules ./node_modules
 COPY --from=builder package*.json ./

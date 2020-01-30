@@ -8,7 +8,7 @@ const baba = (): Promise<unknown> => new Promise(resolve => resolve(Math.random(
 
 @Injectable()
 export class AppService {
-  private redis = new CacheService({ host: 'skeleton-cache', port: 6379, password: undefined });
+  private redis = new CacheService({ host: 'framework-cache', port: 6379, password: undefined });
 
   constructor(@Logger('AppService') private logger: LoggerService) {}
 

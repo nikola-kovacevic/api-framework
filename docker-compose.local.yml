@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   api:
-    container_name: skeleton-api
+    container_name: framework-api
     build:
       context: .
       dockerfile: Dockerfile.local
@@ -11,21 +11,21 @@ services:
       - ${PORT}:${PORT}
       - 9222:9222
     volumes:
-      - ./src:/var/skeleton/api/src
-      - ./dist:/var/skeleton/api/dist
-      - ./uploads:/var/skeleton/api/uploads
+      - ./src:/var/framework/api/src
+      - ./dist:/var/framework/api/dist
+      - ./uploads:/var/framework/api/uploads
     depends_on:
       - mongo
       - redis
     command: npm run start:dev
 
   mongo:
-    container_name: skeleton-db
+    container_name: framework-db
     image: mongo:4.2.2
     environment:
       MONGO_INITDB_ROOT_USERNAME: rwUser
       MONGO_INITDB_ROOT_PASSWORD: 8i0rmOksr3saNvaN
-      MONGO_INITDB_DATABASE: skeleton
+      MONGO_INITDB_DATABASE: framework
     ports:
       - 27018:27017
     volumes:
@@ -33,11 +33,11 @@ services:
     command: --bind_ip_all --port 27017 --quiet
 
   redis:
-    container_name: skeleton-cache
+    container_name: framework-cache
     image: redis:5.0-alpine
     ports:
       - 6379:6379
 
 networks:
   default:
-    name: skeleton-api
+    name: framework-api

@@ -1,7 +1,7 @@
 {
-  "name": "api-skeleton",
+  "name": "api-framework",
   "version": "0.0.1",
-  "description": "Skeleton API project",
+  "description": "API framework project",
   "author": "Nikola Kovacevic",
   "scripts": {
     "prebuild": "rimraf dist",
