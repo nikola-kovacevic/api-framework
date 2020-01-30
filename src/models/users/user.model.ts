@@ -4,7 +4,7 @@ export const UserSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     surname: { type: String, required: true },
-    email: { type: String, required: true, index: true, unique: true },
+    email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     salt: { type: String, required: true },
     status: { type: String, enum: ['ACTIVE', 'INACTIVE'], default: 'INACTIVE' },

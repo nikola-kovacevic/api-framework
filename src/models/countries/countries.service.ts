@@ -9,6 +9,6 @@ export class CountriesService {
   constructor(@InjectModel('Country') private countryModel: Model<Country>) {}
 
   findAll(): Promise<Country[]> {
-    return this.countryModel.find().exec();
+    return this.countryModel.find({}).exec();
   }
 }

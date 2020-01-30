@@ -30,7 +30,7 @@
 7. User management
    - [ ] JWT token assignment
    - [ ] Authentication and authorization guards
-   - [ ] Password encryption
+   - [x] Password encryption
    - [ ] CRUD operations
 8. Log inspection
    - [ ] Filter and read logs
