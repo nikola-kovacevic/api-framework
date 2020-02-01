@@ -1,15 +1,88 @@
+import { Injectable, NestMiddleware } from '@nestjs/common';
+
+import { Entropy } from 'entropy-string';
 import { Request, Response } from 'express';
 
+import { EventLogService } from './../models/logs/event_logs/event_log.service';
 import { LoggerService } from './../services/logger/logger.service';
+import { PerformanceService } from './../services/performance/performance.service';
 
-export function loggerMiddleware(req: Request, res: Response, next: () => void): void {
-  const logger = new LoggerService('LoggerMiddleware');
-  const send = res.send;
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  res.send = function(...args) {
-    logger.log(`Responded to request ${req.path} with status code ${res.statusCode}`);
-    // tslint:disable-next-line: no-invalid-this
-    return send.apply(this, args);
-  };
-  next();
+const generateCorrelation = (): string => {
+  const entropy = new Entropy({ total: 1e6, risk: 1e9 });
+  return entropy.string();
+};
+
+const getIp = (req: Request): string => {
+  const ip = req.get('x-forwarded-for') || req.connection.remoteAddress || req.socket.remoteAddress;
+  return String(ip);
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getMessage = (args: [any?]): string => {
+  if (args.length) {
+    try {
+      const data = JSON.parse(args[0]);
+      return data.message || '';
+    } catch (ex) {
+      return '';
+    }
+  }
+};
+
+const hideSensitiveData = (data: {}): {} => {
+  const request = { ...data };
+
+  return Object.keys(request).reduce((sanitized, key) => {
+    const matches = key.match(new RegExp(/(?:password)|(?:token)/gi));
+    if (matches && request[key]) {
+      sanitized[key] = '**********';
+    } else if (matches && !request[key]) {
+      sanitized[key] = '';
+    } else {
+      sanitized[key] = request[key];
+    }
+    return sanitized;
+  }, {});
+};
+
+@Injectable()
+export class LoggerMiddleware implements NestMiddleware {
+  constructor(private eventLogService: EventLogService, private loggerService: LoggerService) {}
+
+  use(req: Request, res: Response, next: () => void): void {
+    const send = res.send;
+
+    res.locals.correlation = Object.freeze(req.get('Request-Correlation') || generateCorrelation());
+    res.locals.performance = new PerformanceService(res.locals.correlation);
+
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    res.send = (...args) => {
+      this.eventLogService
+        .addLog({
+          correlation: res.locals.correlation,
+          client: {
+            ip: getIp(req),
+            user: res.locals.user || {},
+          },
+          request: {
+            url: req.originalUrl,
+            method: req.method,
+            body: hideSensitiveData(req.body),
+            query: hideSensitiveData(req.query),
+            params: hideSensitiveData(req.params),
+            headers: hideSensitiveData(req.headers),
+          },
+          response: {
+            status: res.statusCode,
+            message: getMessage(args),
+          },
+          debug: res.locals.debug || {},
+          duration: res.locals.performance.measure(),
+        })
+        .catch(ex => this.loggerService.error(`Exception was thrown while trying to store event log`, ex));
+
+      return send.apply(res, args);
+    };
+    next();
+  }
 }

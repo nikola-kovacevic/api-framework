@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -9,6 +9,11 @@ import { AppService } from './app.service';
 
 import { PublicModule } from './controllers/public/public.module';
 import { LoggerModule } from './services/logger/logger.module';
+
+import { LoggerMiddleware } from './middlewares/logger.middleware';
+
+import { EventLogSchema } from './models/logs/event_logs/event_log.model';
+import { EventLogService } from './models/logs/event_logs/event_log.service';
 
 const buildConnectionString = (config: ConfigService): string => {
   const authenticationDatabase = config.get<string>('MONGO_AUTH_DB');
@@ -50,10 +55,15 @@ const buildConnectionString = (config: ConfigService): string => {
       }),
       inject: [ConfigService],
     }),
+    MongooseModule.forFeature([{ name: 'EventLog', schema: EventLogSchema }]),
     LoggerModule.forRoot(),
     PublicModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EventLogService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

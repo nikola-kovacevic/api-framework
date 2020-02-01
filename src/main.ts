@@ -12,8 +12,6 @@ import * as path from 'path';
 
 import { AppModule } from './app.module';
 
-import { loggerMiddleware } from './middlewares/logger.middleware';
-
 import { FileService } from './services/file/file.service';
 import { LoggerModule } from './services/logger/logger.module';
 import { LoggerService } from './services/logger/logger.service';
@@ -40,7 +38,6 @@ async function bootstrap(): Promise<void> {
     });
   }
 
-  app.use(loggerMiddleware);
   app.use(morgan('combined', { stream: accessLogStream() }));
   app.use(helmet());
 

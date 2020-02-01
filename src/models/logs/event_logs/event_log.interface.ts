@@ -5,7 +5,10 @@ export interface EventLog extends Document {
   correlation: string;
   client: {
     ip: string;
-    user?: string;
+    user?: {
+      id: string;
+      email: string;
+    };
   };
   request: {
     url: string;
@@ -17,7 +20,7 @@ export interface EventLog extends Document {
   };
   response: {
     status: number;
-    message?: string | {};
+    message?: string;
   };
   debug: {};
   duration: number;
