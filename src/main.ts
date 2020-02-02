@@ -7,7 +7,6 @@ import { RotatingFileStream } from 'rotating-file-stream';
 import * as helmet from 'helmet';
 import * as mongoose from 'mongoose';
 import * as morgan from 'morgan';
-
 import * as path from 'path';
 
 import { AppModule } from './app.module';
@@ -22,6 +21,17 @@ const accessLogStream = (): RotatingFileStream => {
   return fileService.getRotatingFileStream(path.join(__dirname, 'logs/access', 'access.log'));
 };
 
+const getErrorData = (error: { message?: {}; stack?: {} }): { ERROR; STACK? } => {
+  switch (error) {
+    case typeof error === 'string':
+      return { ERROR: error };
+    case error instanceof Error:
+      return { ERROR: error.message, STACK: error.stack };
+    default:
+      return { ERROR: JSON.stringify(error) };
+  }
+};
+
 async function bootstrap(): Promise<void> {
   const logger = new LoggerService('ApplicationLoader');
   const app = await NestFactory.create(AppModule, { cors: true, logger });
@@ -29,6 +39,7 @@ async function bootstrap(): Promise<void> {
 
   const configService = app.get<ConfigService>(ConfigService);
   const port = parseInt(configService.get('PORT'), 10);
+
   if (configService.get('NODE_ENV') === 'development') {
     mongoose.set('debug', (collection, method, ...args) => {
       const loggerService = new LoggerService('Mongoose');
@@ -57,5 +68,19 @@ async function bootstrap(): Promise<void> {
     .listen(port)
     .then(() => logger.log(`Application is running on port ${port}`))
     .catch(ex => logger.error('Error on application start', ex));
+
+  process.on('unhandledRejection', error => {
+    const { ERROR, STACK } = getErrorData(error);
+    logger.error(`Unhandled rejection in application: ${ERROR}`, { ERROR, STACK });
+  });
+
+  // TS doesn't recognize process.on('uncaughtException'):
+  // Argument of type '"uncaughtException"' is not assignable to parameter of type 'Signals'
+  (process as NodeJS.EventEmitter).on('uncaughtException', (exception, origin) => {
+    const { ERROR, STACK } = getErrorData(exception);
+    logger
+      .error(`Unhandled exception in application: ${ERROR}`, { ERROR, STACK, ORIGIN: origin })
+      .on('finish', () => process.exit(1));
+  });
 }
 bootstrap().catch(ex => ex);

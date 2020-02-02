@@ -1,17 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as path from 'path';
+import { ConfigService } from '@nestjs/config';
 
 import { Entropy } from 'entropy-string';
 import { createLogger, format, transports } from 'winston';
+import { MongoDB } from 'winston-mongodb';
+
+import * as path from 'path';
+
 import 'winston-daily-rotate-file';
 
+const SPLAT: string = Symbol.for('splat') as any; // workaround as TypeScript doesn't allow Symbol to be used as a key
+
+const buildConnectionString = (): string => {
+  const config = new ConfigService();
+  const authenticationDatabase = config.get('MONGO_AUTH_DB');
+  const authSource = authenticationDatabase ? `?authSource=${authenticationDatabase}` : '';
+  return `mongodb://${config.get('MONGO_USER')}:${config.get('MONGO_PASSWORD')}@${config.get('MONGO_URL')}/${config.get(
+    'MONGO_DB_NAME',
+  )}${authSource}`;
+};
+
 const getMetadata = (log: object): [] => {
-  const SPLAT: string = Symbol.for('splat') as any; // workaround as TypeScript doesn't allow Symbol to be used as a key
   const metadata = log[SPLAT];
-  if (metadata && metadata[0] && Array.isArray(metadata[0])) {
-    return metadata[0].map(meta => JSON.stringify(meta, undefined, 2));
-  }
-  return [];
+  return metadata && metadata[0] ? metadata[0] : [];
 };
 
 const getCorrelation = (): string => {
@@ -19,14 +30,17 @@ const getCorrelation = (): string => {
   return entropy.string();
 };
 
+const printMetadata = (metadata: {} | string): string =>
+  typeof metadata === 'string' ? metadata : JSON.stringify(metadata);
+
 const logOutput = format.printf(log => {
-  const metadata = log.level !== 'error' ? getMetadata(log) : '';
+  log.metadata = getMetadata(log);
   const correlation = getCorrelation();
   const intro = `[${log.timestamp}][${correlation}][${log.level}]:`;
 
   return (
     `${intro} ${log.message}` +
-    `${metadata && metadata.length ? `\n${intro} [Metadata]: ${metadata}` : ''}` +
+    `${log.metadata && log.metadata.length ? `\n${intro} [Metadata]: ${printMetadata(log.metadata)}` : ''}` +
     `${log.stack ? `\n${intro} [Stacktrace]: ${log.stack}` : ''}`
   );
 });
@@ -47,9 +61,8 @@ const fileTransport = new transports.DailyRotateFile({
   maxFiles: '14d',
   auditFile: path.join(__dirname, '../../logs', 'logAuditFile.json'),
   dirname: path.join(__dirname, '../../logs', 'application'),
-  format: logFormat,
   handleExceptions: true,
-  level: 'warn',
+  level: 'debug',
 });
 
 const consoleTransport = new transports.Console({
@@ -58,6 +71,21 @@ const consoleTransport = new transports.Console({
   level: 'silly',
 });
 
+const mongoTransport = new MongoDB({
+  db: buildConnectionString(),
+  storeHost: true,
+  decolorize: true,
+  level: 'debug',
+  collection: 'applicationlogs',
+  expireAfterSeconds: 864000, // 10 days retention
+  metaKey: 'metadata',
+  options: {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+});
+
 export const logger = createLogger({
-  transports: [consoleTransport, fileTransport],
+  format: logFormat,
+  transports: [consoleTransport, fileTransport, mongoTransport],
 });

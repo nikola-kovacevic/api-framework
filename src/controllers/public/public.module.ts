@@ -3,8 +3,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { CountriesSchema } from '../../models/countries/countries.model';
 import { CountriesService } from '../../models/countries/countries.service';
+
 import { UserSchema } from './../../models/users/user.model';
 import { UserService } from './../../models/users/user.service';
+
 import { PublicController } from './public.controller';
 
 @Module({

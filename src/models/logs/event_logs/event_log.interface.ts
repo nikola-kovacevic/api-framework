@@ -24,4 +24,5 @@ export interface EventLog extends Document {
   };
   debug: {};
   duration: number;
+  createdAt?: Date;
 }

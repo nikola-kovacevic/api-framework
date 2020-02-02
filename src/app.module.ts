@@ -1,14 +1,17 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
+import { InjectConnection, MongooseModule } from '@nestjs/mongoose';
 
 import * as Joi from '@hapi/joi';
+import { Connection } from 'mongoose';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { PublicModule } from './controllers/public/public.module';
+
 import { LoggerModule } from './services/logger/logger.module';
+import { LoggerService } from './services/logger/logger.service';
 
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 
@@ -44,7 +47,6 @@ const buildConnectionString = (config: ConfigService): string => {
       },
     }),
     MongooseModule.forRootAsync({
-      imports: [ConfigModule],
       useFactory: async (config: ConfigService) => ({
         uri: buildConnectionString(config),
         user: config.get<string>('MONGO_USER'),
@@ -63,6 +65,19 @@ const buildConnectionString = (config: ConfigService): string => {
   providers: [AppService, EventLogService],
 })
 export class AppModule implements NestModule {
+  logger = new LoggerService('MongoDB Connection');
+
+  constructor(@InjectConnection() private readonly connection: Connection) {
+    connection
+      .on('connecting', () => this.logger.log('Application is connecting to MongoDB'))
+      .on('reconnected', () => this.logger.log('Application is reconnected to MongoDB'))
+      .on('connected', () => this.logger.log('Application is connected to MongoDB'))
+      .on('disconnected', () => this.logger.warn('Application is disconnected from MongoDB'))
+      .on('error', err => {
+        this.logger.error('MongoDB database error: ', err);
+        process.exit(1);
+      });
+  }
   configure(consumer: MiddlewareConsumer): void {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }

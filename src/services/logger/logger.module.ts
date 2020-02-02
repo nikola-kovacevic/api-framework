@@ -1,4 +1,5 @@
 import { DynamicModule } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { createLoggerProviders } from './logger.providers';
 import { LoggerService } from './logger.service';
@@ -8,7 +9,7 @@ export class LoggerModule {
     const prefixedLoggerProviders = createLoggerProviders();
     return {
       module: LoggerModule,
-      providers: [LoggerService, ...prefixedLoggerProviders],
+      providers: [LoggerService, ConfigService, ...prefixedLoggerProviders],
       exports: [LoggerService, ...prefixedLoggerProviders],
     };
   }

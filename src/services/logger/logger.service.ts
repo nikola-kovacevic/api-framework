@@ -15,8 +15,8 @@ export class LoggerService extends Logger {
     this.prefix = prefix;
   }
 
-  error(message: any, trace?: string): void {
-    logger.error(this.format(message), trace);
+  error(message: any, ...meta: any): any {
+    return logger.error(this.format(message), meta);
   }
 
   warn(message: any, ...meta: any): void {

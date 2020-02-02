@@ -5,8 +5,9 @@
 1. Winston logs
    - [x] Console transport
    - [x] File transport
-   - [ ] DB transport
+   - [x] DB transport
    - [x] Correlation for distributed tracking
+   - [x] Logs unhandled rejections and exceptions
 2. Morgan logs for HTTP tracking
    - [x] Implements Morgan
    - [x] Writes to file
@@ -17,16 +18,16 @@
    - [x] Cache service
 4. MongoDB connection
    - [x] Implements Mongoose connection
-   - [ ] Listeners for connect and disconnect events
+   - [x] Listeners for connect and disconnect events
    - [x] Logging on development environment
 5. Provided Docker images
    - [x] MongoDB
    - [x] Redis
    - [x] Node.js
 6. Request & Response Interceptors
-   - [ ] Measure execution time with Performance API
-   - [ ] Automated logging of events
-   - [ ] Distributed tracing via correlation
+   - [x] Measure execution time with Performance API
+   - [x] Automated logging of events
+   - [x] Distributed tracing via correlation
 7. User management
    - [ ] JWT token assignment
    - [ ] Authentication and authorization guards
@@ -34,8 +35,7 @@
    - [ ] CRUD operations
 8. Log inspection
    - [ ] Filter and read logs
-   - [ ] Archive logs
-   - [ ] Retention
+   - [x] Retention
 9. Administrative application management
    - [ ] Manually clear cache
    - [ ] Manually connect to Redis

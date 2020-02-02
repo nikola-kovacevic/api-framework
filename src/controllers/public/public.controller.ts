@@ -24,7 +24,7 @@ export class PublicController {
   checkHealth(@Res() res: Response): Response {
     return this.connection.readyState === 1
       ? res.status(200).json({ message: 'APPLICATION AND DATABASE ARE WORKING' })
-      : res.status(503).json({ message: 'DATABASE CONNECTION IS NOT WORKING' });
+      : res.status(503).json({ message: 'MONGODB CONNECTION IS NOT WORKING' });
   }
 
   @Get('countries')
