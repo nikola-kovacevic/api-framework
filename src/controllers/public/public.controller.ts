@@ -5,6 +5,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 import { Connection } from 'mongoose';
 
+import { User } from '../../decorators/user.decorator';
+
 import { CountriesService } from './../../models/countries/countries.service';
 import { UserDto } from './../../models/users/user.interface';
 import { UserService } from './../../models/users/user.service';
@@ -64,7 +66,9 @@ export class PublicController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('token')
-  async refresh(@Res() res: Response): Promise<Response> {
-    return res.status(202).json({ message: 'Token refreshed' });
+  async refresh(@User() user, @Res() res: Response): Promise<Response> {
+    const data = (({ _id, email, role }): Pick<UserDto, 'email' | '_id' | 'role'> => ({ _id, email, role }))(user);
+    const token = await this.authService.login(data);
+    return res.status(202).json({ message: 'Token refreshed', token });
   }
 }

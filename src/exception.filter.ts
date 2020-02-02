@@ -3,7 +3,10 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from
 
 const getMessage = (exception: any): string => {
   if (exception instanceof HttpException && exception.message) {
-    return exception.message.message || 'Something bad happened';
+    return exception.message.message || exception.message.error || 'Something bad happened';
+  }
+  if (exception && exception.error && typeof exception.error === 'string') {
+    return exception.error;
   }
   return 'Something bad happened';
 };
