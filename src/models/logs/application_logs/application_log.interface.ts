@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export interface ApplicationLog extends Document {
+export interface ApplicationLogDto extends Document {
   _id?: string;
   level: string;
   message: string;

@@ -1,11 +1,15 @@
-import { Body, ConflictException, Controller, Get, Post, Res, UnauthorizedException } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
+import { AuthGuard } from '@nestjs/passport';
 
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { Connection } from 'mongoose';
 
 import { CountriesService } from './../../models/countries/countries.service';
+import { UserDto } from './../../models/users/user.interface';
 import { UserService } from './../../models/users/user.service';
+
+import { AuthService } from './../../services/auth/auth.service';
 import { LoggerService } from './../../services/logger/logger.service';
 
 import { AuthenticateUser, RegisterUser } from './../../validators/public';
@@ -18,6 +22,7 @@ export class PublicController {
     @InjectConnection() private readonly connection: Connection,
     private readonly countriesService: CountriesService,
     private readonly userService: UserService,
+    private readonly authService: AuthService,
   ) {}
 
   @Get('health')
@@ -42,11 +47,24 @@ export class PublicController {
   }
 
   @Post('authenticate')
-  async authenticate(@Body() authenticateUser: AuthenticateUser, @Res() res: Response): Promise<Response> {
-    if (!(await this.userService.authenticateUser(authenticateUser))) {
-      throw new UnauthorizedException('Wrong email address or password!');
-    }
+  async authenticate(
+    @Body() authenticateUser: AuthenticateUser,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const token = await this.authService
+      .authenticateUser(authenticateUser)
+      .then((authenticatedUser: Pick<UserDto, 'email' | '_id' | 'role'>) => {
+        req.user = { email: authenticatedUser.email, _id: authenticatedUser._id };
+        return this.authService.login(authenticatedUser);
+      });
 
-    return res.status(202).json({ authenticated: true });
+    return res.status(202).json({ token, message: 'Authentication successful' });
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('token')
+  async refresh(@Res() res: Response): Promise<Response> {
+    return res.status(202).json({ message: 'Token refreshed' });
   }
 }

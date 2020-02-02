@@ -5,7 +5,7 @@ export const EventLogSchema = new mongoose.Schema({
   client: {
     ip: String,
     user: {
-      id: { type: mongoose.Schema.Types.ObjectId, ref: 'users', index: true },
+      _id: { type: mongoose.Schema.Types.ObjectId, ref: 'users', index: true },
       email: String,
     },
   },

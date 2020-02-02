@@ -15,6 +15,8 @@ import { FileService } from './services/file/file.service';
 import { LoggerModule } from './services/logger/logger.module';
 import { LoggerService } from './services/logger/logger.service';
 
+import { GlobalExceptionsFilter } from './exception.filter';
+
 const accessLogStream = (): RotatingFileStream => {
   const fileService = new FileService();
   fileService.createDirectoryIfNoneExists(path.join(__dirname, './logs', 'access'));
@@ -22,14 +24,13 @@ const accessLogStream = (): RotatingFileStream => {
 };
 
 const getErrorData = (error: { message?: {}; stack?: {} }): { ERROR; STACK? } => {
-  switch (error) {
-    case typeof error === 'string':
-      return { ERROR: error };
-    case error instanceof Error:
-      return { ERROR: error.message, STACK: error.stack };
-    default:
-      return { ERROR: JSON.stringify(error) };
+  if (error instanceof Error) {
+    return { ERROR: error.message, STACK: error.stack };
+  } else if (typeof error === 'string') {
+    return { ERROR: error };
   }
+
+  return { ERROR: JSON.stringify(error) };
 };
 
 async function bootstrap(): Promise<void> {
@@ -62,7 +63,10 @@ async function bootstrap(): Promise<void> {
       },
     }),
   );
+
   app.setGlobalPrefix('v1');
+
+  app.useGlobalFilters(new GlobalExceptionsFilter());
 
   await app
     .listen(port)

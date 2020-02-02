@@ -1,13 +1,13 @@
 import { Document } from 'mongoose';
 
-export interface EventLog extends Document {
+export interface EventLogDto extends Document {
   _id?: string;
   correlation: string;
   client: {
     ip: string;
     user?: {
-      id: string;
-      email: string;
+      _id?: string;
+      email?: string;
     };
   };
   request: {

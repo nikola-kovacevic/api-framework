@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { Country } from './country.interface';
+import { CountryDto } from './country.interface';
 
 @Injectable()
 export class CountriesService {
-  constructor(@InjectModel('Country') private countryModel: Model<Country>) {}
+  constructor(@InjectModel('Country') private countryModel: Model<CountryDto>) {}
 
-  findAll(): Promise<Country[]> {
+  findAll(): Promise<CountryDto[]> {
     return this.countryModel.find({}).exec();
   }
 }

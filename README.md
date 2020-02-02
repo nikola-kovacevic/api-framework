@@ -29,21 +29,24 @@
    - [x] Automated logging of events
    - [x] Distributed tracing via correlation
 7. User management
-   - [ ] JWT token assignment
+   - [x] JWT token strategy
    - [ ] Authentication and authorization guards
    - [x] Password encryption
    - [ ] CRUD operations
-8. Log inspection
+8. Exception management
+   - [x] Provides standardized response to client
+   - [x] Provides correlation
+9. Log inspection
    - [ ] Filter and read logs
    - [x] Retention
-9. Administrative application management
-   - [ ] Manually clear cache
-   - [ ] Manually connect to Redis
-   - [ ] Manually disconnect from Redis
-10. Mail service
+10. Administrative application management
+    - [ ] Manually clear cache
+    - [ ] Manually connect to Redis
+    - [ ] Manually disconnect from Redis
+11. Mail service
     - [ ] Mailgun connection
     - [ ] Email templates (i.e. activation, system message, password reset)
-11. Translate service
+12. Translate service
     - [ ] Get's the translation from DB / or file
     - [ ] Returns default language translation if none found
 

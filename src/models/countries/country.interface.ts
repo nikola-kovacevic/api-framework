@@ -6,7 +6,7 @@ interface CountryName {
   native: Record<string, string>;
 }
 
-export interface Country extends Document {
+export interface CountryDto extends Document {
   altSpellings: [string];
   area: number;
   borders: [string];
