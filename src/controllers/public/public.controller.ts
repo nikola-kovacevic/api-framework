@@ -6,6 +6,7 @@ import { Request, Response } from 'express';
 import { Connection } from 'mongoose';
 
 import { User } from '../../decorators/user.decorator';
+import { Token } from './../../decorators/token.decorator';
 
 import { CountriesService } from './../../models/countries/countries.service';
 import { UserDto } from './../../models/users/user.interface';
@@ -58,17 +59,20 @@ export class PublicController {
       .authenticateUser(authenticateUser)
       .then((authenticatedUser: Pick<UserDto, 'email' | '_id' | 'role'>) => {
         req.user = { email: authenticatedUser.email, _id: authenticatedUser._id };
-        return this.authService.login(authenticatedUser);
+        return this.authService.signToken(authenticatedUser);
       });
 
-    return res.status(202).json({ token, message: 'Authentication successful' });
+    return res.status(202).json({ token, message: 'Authorization successful' });
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get('token')
-  async refresh(@User() user, @Res() res: Response): Promise<Response> {
+  async refresh(@User() user, @Token() oldToken, @Res() res: Response): Promise<Response> {
     const data = (({ _id, email, role }): Pick<UserDto, 'email' | '_id' | 'role'> => ({ _id, email, role }))(user);
-    const token = await this.authService.login(data);
+
+    const token = await this.authService.signToken(data);
+    await this.authService.blacklistToken(oldToken, user.exp);
+
     return res.status(202).json({ message: 'Token refreshed', token });
   }
 }

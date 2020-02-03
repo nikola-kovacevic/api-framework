@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 
 import * as bcrypt from 'bcrypt';
 
+import { CacheService } from './../cache/cache.service';
 import { LoggerService } from './../logger/logger.service';
 
 import { UserDto } from './../../models/users/user.interface';
@@ -36,7 +37,17 @@ export class AuthService {
     }))(foundUser);
   }
 
-  async login(user: Pick<UserDto, '_id' | 'email' | 'role'>): Promise<string> {
+  async signToken(user: Pick<UserDto, '_id' | 'email' | 'role'>): Promise<string> {
     return this.jwtService.sign(user);
+  }
+
+  readToken(token: string): string | { [key: string]: string } {
+    const decoded = this.jwtService.decode(token);
+    return decoded;
+  }
+
+  async blacklistToken(token: string, tokenExpirationDate?: number): Promise<void> {
+    const ttl = tokenExpirationDate ? Math.ceil(tokenExpirationDate - Date.now() / 1000) : 86400; // TTL set to token expiration time or to 24h
+    await CacheService.get(token, () => Promise.resolve(`[${Date.now()}] TOKEN BLACKLISTED`), ttl);
   }
 }

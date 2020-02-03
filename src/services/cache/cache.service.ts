@@ -1,4 +1,6 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
+import { CacheOptions } from './cache.interface';
 
 import { LoggerService } from './../logger/logger.service';
 
@@ -11,16 +13,25 @@ const REDIS_CONFIGURATION = new Map([
   ['maxmemory-samples', '10'],
 ]);
 
-@Injectable({ scope: Scope.TRANSIENT })
-export class CacheService {
+const DEFAULT_OPTIONS = {
+  host: 'localhost',
+  port: 6379,
+  password: '',
+  reconnectOnError: true,
+  db: 0,
+  autoResubscribe: true,
+};
+
+class Cache {
   private redis: Redis;
   private reconnectAttempt = 0;
   private isRedisAvailable = false;
 
   private logger = new LoggerService('Redis');
 
-  constructor({ host = 'localhost', port = 6379, password }) {
-    this.redis = new Redis({ port, host, password, reconnectOnError: true });
+  constructor(options: CacheOptions = {}) {
+    const connection: CacheOptions = { ...DEFAULT_OPTIONS, ...options };
+    this.redis = new Redis(connection);
     this.addEventListeners();
     this.enableMonitoring();
     this.configureRedis();
@@ -55,6 +66,11 @@ export class CacheService {
     }
 
     return this.redis.type(key).then(type => (type === 'string' ? this.getString(key) : this.getHash(key)));
+  }
+
+  async exists(key: string): Promise<boolean> {
+    const exists = await this.redis.exists(key);
+    return exists === 1;
   }
 
   async delete(key: string): Promise<void> {
@@ -114,7 +130,11 @@ export class CacheService {
       }
 
       monitor.on('monitor', (time, args, source, database) => {
-        this.logger.log(`[${time}]: [Arguments sent to Redis server]: ${util.inspect(args)}`, source, database);
+        this.logger.debug(
+          `[${time}]: [Arguments sent to Redis server]: ${util.inspect(args)}`,
+          { source },
+          { database },
+        );
       });
     });
   }
@@ -158,3 +178,9 @@ export class CacheService {
     return value;
   }
 }
+
+const config = new ConfigService();
+export const CacheService: Cache = new Cache({
+  host: config.get('REDIS_HOST'),
+  port: config.get('REDIS_PORT'),
+});

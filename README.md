@@ -30,7 +30,8 @@
    - [x] Distributed tracing via correlation
 7. User management
    - [x] JWT token strategy
-   - [ ] Authentication and authorization guards
+   - [ ] Authentication guards
+   - [x] Authorization guards
    - [x] Password encryption
    - [ ] CRUD operations
 8. Exception management

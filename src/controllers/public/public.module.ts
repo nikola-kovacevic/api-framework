@@ -1,5 +1,7 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+
+import { AuthMiddleware } from './../../middlewares/auth.middleware';
 
 import { UserModule } from './../../models/users/user.module';
 
@@ -15,4 +17,8 @@ import { AuthModule } from '../../services/auth/auth.module';
   providers: [CountriesService],
   controllers: [PublicController],
 })
-export class PublicModule {}
+export class PublicModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(AuthMiddleware).forRoutes('public/token');
+  }
+}
