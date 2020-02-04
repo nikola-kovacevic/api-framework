@@ -11,13 +11,13 @@ import { AppService } from './app.service';
 import { PublicModule } from './controllers/public/public.module';
 import { UserManagementModule } from './controllers/user-management/user-management.module';
 
-import { LoggerModule } from './services/logger/logger.module';
-import { LoggerService } from './services/logger/logger.service';
-
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 
 import { EventLogSchema } from './models/logs/event_logs/event_log.model';
 import { EventLogService } from './models/logs/event_logs/event_log.service';
+
+import { LoggerModule } from './services/logger/logger.module';
+import { LoggerService } from './services/logger/logger.service';
 
 const buildConnectionString = (config: ConfigService): string => {
   const authenticationDatabase = config.get<string>('MONGO_AUTH_DB');

@@ -10,7 +10,12 @@ import { UserDto } from './user.interface';
 export class UserService {
   constructor(@InjectModel('User') private userModel: Model<UserDto>) {}
 
-  find(filter = {}, projection: string | {} = '', pagination = {}, lean = true): Promise<UserDto[] | null> {
+  find(
+    filter = {},
+    projection: string | {} = '-password -salt',
+    pagination = {},
+    lean = true,
+  ): Promise<UserDto[] | null> {
     return this.userModel
       .find(filter, projection, pagination)
       .lean(lean)

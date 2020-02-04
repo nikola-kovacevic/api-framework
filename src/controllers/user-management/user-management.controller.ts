@@ -6,7 +6,10 @@ import { Response } from 'express';
 import { Connection } from 'mongoose';
 
 import { User } from '../../decorators/user.decorator';
+import { Roles } from './../../decorators/roles.decorator';
 import { Token } from './../../decorators/token.decorator';
+
+import { RolesGuard } from './../../guards/roles.guard';
 
 import { UserService } from './../../models/users/user.service';
 
@@ -14,9 +17,9 @@ import { AuthService } from './../../services/auth/auth.service';
 import { LoggerService } from './../../services/logger/logger.service';
 
 @Controller('user-management')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class UserManagementController {
-  logger = new LoggerService('Public');
+  logger = new LoggerService('UserManagement');
 
   constructor(
     @InjectConnection() private readonly connection: Connection,
@@ -31,6 +34,7 @@ export class UserManagementController {
   }
 
   @Get('users')
+  @Roles('ADMIN')
   async getUsers(@Res() res: Response): Promise<Response> {
     return res.status(200).json({ users: await this.userService.find({}) });
   }

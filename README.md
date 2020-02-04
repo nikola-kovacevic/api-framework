@@ -30,7 +30,7 @@
    - [x] Distributed tracing via correlation
 7. User management
    - [x] JWT token strategy
-   - [ ] Authentication guards
+   - [x] Authentication guards
    - [x] Authorization guards
    - [x] Password encryption
    - [ ] CRUD operations
@@ -45,7 +45,7 @@
     - [ ] Manually connect to Redis
     - [ ] Manually disconnect from Redis
 11. Mail service
-    - [ ] Mailgun connection
+    - [ ] Mailgun connection or some other service
     - [ ] Email templates (i.e. activation, system message, password reset)
 12. Translate service
     - [ ] Get's the translation from DB / or file
