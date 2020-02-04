@@ -9,6 +9,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { PublicModule } from './controllers/public/public.module';
+import { UserManagementModule } from './controllers/user-management/user-management.module';
 
 import { LoggerModule } from './services/logger/logger.module';
 import { LoggerService } from './services/logger/logger.service';
@@ -60,6 +61,7 @@ const buildConnectionString = (config: ConfigService): string => {
     MongooseModule.forFeature([{ name: 'EventLog', schema: EventLogSchema }]),
     LoggerModule.forRoot(),
     PublicModule,
+    UserManagementModule,
   ],
   controllers: [AppController],
   providers: [AppService, EventLogService],
