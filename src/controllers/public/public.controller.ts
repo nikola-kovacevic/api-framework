@@ -46,7 +46,8 @@ export class PublicController {
       this.logger.warn(`[Register user]: Exception was raised during creation of user: ${registerUser.email}`, err);
       throw new ConflictException('User with this email address already exists');
     });
-    return res.status(201).json({ user });
+    // TODO: generate authentication email
+    return res.status(201).json({ message: 'Registration successful', user });
   }
 
   @Post('authenticate')

@@ -6,6 +6,15 @@ import { Model } from 'mongoose';
 
 import { UserDto } from './user.interface';
 
+interface SanitizedUser {
+  _id?: string;
+  name: string;
+  surname: string;
+  email: string;
+  status?: string;
+  role?: string;
+}
+
 @Injectable()
 export class UserService {
   constructor(@InjectModel('User') private userModel: Model<UserDto>) {}
@@ -22,31 +31,45 @@ export class UserService {
       .exec();
   }
 
-  findOne(query, lean = true): Promise<UserDto | null> {
+  async findOne(query: object, projection: string | {} = '-password -salt', lean = true): Promise<UserDto | null> {
     return this.userModel
-      .findOne(query)
+      .findOne(query, projection)
       .lean(lean)
       .exec();
   }
 
-  async createOne(user: UserDto): Promise<UserDto | null> {
+  async delete(query: object): Promise<{ deletedCount: number } | null> {
+    return this.userModel.deleteOne(query).exec();
+  }
+
+  async createOne(user: UserDto): Promise<SanitizedUser | null> {
     const salt = await bcrypt.genSalt(10);
     const password = await bcrypt.hash(user.password, salt);
     const newUser = { ...user, salt, password };
-    return this.userModel.create(newUser);
+    const createdUser = await this.userModel.create(newUser);
+
+    return (({ _id, name, surname, email, role, status }): SanitizedUser => ({
+      _id,
+      name,
+      surname,
+      email,
+      role,
+      status,
+    }))(createdUser);
   }
 
-  async updateOne(user: Partial<UserDto>): Promise<UserDto | null> {
-    const newUserData = { ...user };
-    if (newUserData.password) {
-      newUserData.salt = await bcrypt.genSalt(10);
-      newUserData.password = await bcrypt.hash(newUserData.password, newUserData.salt);
+  async updateOne(query: object, updateObject: Partial<UserDto>): Promise<UserDto | null> {
+    const user = { ...updateObject };
+
+    if (user.password) {
+      user.salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(user.password, user.salt);
     } else {
-      delete newUserData.password;
+      delete user.password;
     }
 
     return this.userModel
-      .findOneAndUpdate({ email: user.email }, newUserData, {
+      .findOneAndUpdate(query, user, {
         new: true,
         select: '-password -salt -_id -_v -createdAt -updatedAt',
       })

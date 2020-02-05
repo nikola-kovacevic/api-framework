@@ -18,7 +18,7 @@ export class AuthService {
   async authenticateUser(
     user: Pick<UserDto, 'email' | 'password'>,
   ): Promise<Pick<UserDto, '_id' | 'email' | 'role'> | Error> {
-    const foundUser = await this.userService.findOne({ email: user.email, status: 'ACTIVE' });
+    const foundUser = await this.userService.findOne({ email: user.email, status: 'ACTIVE' }, {});
     if (!foundUser) {
       this.logger.warn(`User ${user.email} not found`);
       throw new UnauthorizedException('Wrong email address or password!');

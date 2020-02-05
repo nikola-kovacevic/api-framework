@@ -25,7 +25,10 @@ const getMessage = (args: [any?]): string => {
   if (args.length) {
     try {
       const data = JSON.parse(args[0]);
-      return data.message || '';
+      if (data.message) {
+        return typeof data.message === 'string' ? data.message : JSON.stringify(data.message);
+      }
+      return '';
     } catch (ex) {
       return '';
     }

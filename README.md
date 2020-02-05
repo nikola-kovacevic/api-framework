@@ -33,7 +33,7 @@
    - [x] Authentication guards
    - [x] Authorization guards
    - [x] Password encryption
-   - [ ] CRUD operations
+   - [x] CRUD operations
 8. Exception management
    - [x] Provides standardized response to client
    - [x] Provides correlation
@@ -48,7 +48,7 @@
     - [ ] Mailgun connection or some other service
     - [ ] Email templates (i.e. activation, system message, password reset)
 12. Translate service
-    - [ ] Get's the translation from DB / or file
+    - [ ] Get the translation from DB or file
     - [ ] Returns default language translation if none found
 
 ## USED ENVIRONMENT VARIABLES
