@@ -9,6 +9,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
   UnprocessableEntityException,
   UseGuards,
@@ -20,6 +21,7 @@ import { Response } from 'express';
 import { User } from '../../decorators/user.decorator';
 import { Pagination } from './../../decorators/pagination.decorator';
 import { Roles } from './../../decorators/roles.decorator';
+import { Search } from './../../decorators/search.decorator';
 import { Token } from './../../decorators/token.decorator';
 
 import { RolesGuard } from './../../guards/roles.guard';
@@ -103,10 +105,15 @@ export class UserManagementController {
 
   @Get('users')
   @Roles('ADMIN')
-  async getUsers(@Pagination() pagination, @Res() res: Response): Promise<Response> {
+  async getUsers(@Pagination() pagination, @Search() find, @Query() query, @Res() res: Response): Promise<Response> {
+    const filter = query.status ? [{ status: query.status }] : [{}];
+    const search = find
+      ? [{ name: { $regex: find } }, { surname: { $regex: find } }, { email: { $regex: find } }]
+      : [{}];
+
     const [users, total] = await Promise.all([
-      this.userService.find({}, '-password -salt -__v', pagination),
-      this.userService.count({}),
+      this.userService.find({}, search, filter, pagination),
+      this.userService.count({}, search, filter),
     ]);
 
     return res.status(200).json({ message: 'List of users', users, total });

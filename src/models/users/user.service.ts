@@ -20,19 +20,27 @@ export class UserService {
   constructor(@InjectModel('User') private userModel: Model<UserDto>) {}
 
   find(
-    filter = {},
-    projection: string | {} = '-password -salt',
+    query = {},
+    search = [{}],
+    filter = [{}],
     pagination = {},
+    projection: string | {} = '-password -salt -__v',
     lean = true,
   ): Promise<UserDto[] | null> {
     return this.userModel
-      .find(filter, projection, pagination)
+      .find(query, projection, pagination)
+      .or(search)
+      .and(filter)
       .lean(lean)
       .exec();
   }
 
-  async count(query: object): Promise<number> {
-    return this.userModel.countDocuments(query).exec();
+  async count(query = {}, search = [{}], filter = [{}]): Promise<number> {
+    return this.userModel
+      .countDocuments(query)
+      .or(search)
+      .and(filter)
+      .exec();
   }
 
   async findOne(query: object, projection: string | {} = '-password -salt', lean = true): Promise<UserDto | null> {

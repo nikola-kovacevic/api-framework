@@ -2,6 +2,9 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 
 const getMessage = (exception: any): string => {
+  const { error } = console;
+  error(exception);
+
   if (exception instanceof HttpException && exception.message) {
     return exception.message.message || exception.message.error || 'Something bad happened';
   }
