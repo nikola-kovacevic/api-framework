@@ -18,6 +18,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 
 import { User } from '../../decorators/user.decorator';
+import { Pagination } from './../../decorators/pagination.decorator';
 import { Roles } from './../../decorators/roles.decorator';
 import { Token } from './../../decorators/token.decorator';
 
@@ -102,9 +103,13 @@ export class UserManagementController {
 
   @Get('users')
   @Roles('ADMIN')
-  async getUsers(@Res() res: Response): Promise<Response> {
-    // TODO: implement pagination
-    return res.status(200).json({ message: 'List of users', users: await this.userService.find({}) });
+  async getUsers(@Pagination() pagination, @Res() res: Response): Promise<Response> {
+    const [users, total] = await Promise.all([
+      this.userService.find({}, '-password -salt -__v', pagination),
+      this.userService.count({}),
+    ]);
+
+    return res.status(200).json({ message: 'List of users', users, total });
   }
 
   @Post('user')

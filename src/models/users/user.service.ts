@@ -31,6 +31,10 @@ export class UserService {
       .exec();
   }
 
+  async count(query: object): Promise<number> {
+    return this.userModel.countDocuments(query).exec();
+  }
+
   async findOne(query: object, projection: string | {} = '-password -salt', lean = true): Promise<UserDto | null> {
     return this.userModel
       .findOne(query, projection)
