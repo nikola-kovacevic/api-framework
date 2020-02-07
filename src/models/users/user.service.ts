@@ -19,14 +19,14 @@ interface SanitizedUser {
 export class UserService {
   constructor(@InjectModel('User') private userModel: Model<UserDto>) {}
 
-  find(
+  async find(
     query = {},
     search = [{}],
     filter = [{}],
     pagination = {},
     projection: string | {} = '-password -salt -__v',
     lean = true,
-  ): Promise<UserDto[] | null> {
+  ): Promise<UserDto[] | []> {
     return this.userModel
       .find(query, projection, pagination)
       .or(search)

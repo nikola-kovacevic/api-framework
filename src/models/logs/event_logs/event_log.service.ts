@@ -12,14 +12,31 @@ export class EventLogService {
     return this.eventLogModel.create(eventLog);
   }
 
-  findAll(): Promise<EventLogDto[]> {
+  async findAll(): Promise<EventLogDto[]> {
     return this.eventLogModel.find({}).exec();
   }
 
-  find(filter = {}, projection: string | {} = '', pagination = {}, lean = true): Promise<EventLogDto[] | null> {
+  async find(
+    query = {},
+    search = [{}],
+    filter = [{}],
+    pagination = {},
+    projection: string | {} = '-__v',
+    lean = true,
+  ): Promise<EventLogDto[] | []> {
     return this.eventLogModel
-      .find(filter, projection, pagination)
+      .find(query, projection, pagination)
+      .or(search)
+      .and(filter)
       .lean(lean)
+      .exec();
+  }
+
+  async count(query = {}, search = [{}], filter = [{}]): Promise<number> {
+    return this.eventLogModel
+      .countDocuments(query)
+      .or(search)
+      .and(filter)
       .exec();
   }
 }

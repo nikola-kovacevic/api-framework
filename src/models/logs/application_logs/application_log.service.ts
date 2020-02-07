@@ -8,14 +8,31 @@ import { ApplicationLogDto } from './application_log.interface';
 export class ApplicationLogService {
   constructor(@InjectModel('ApplicationLog') private applicationLogModel: Model<ApplicationLogDto>) {}
 
-  findAll(): Promise<ApplicationLogDto[]> {
+  async findAll(): Promise<ApplicationLogDto[]> {
     return this.applicationLogModel.find({}).exec();
   }
 
-  find(filter = {}, projection: string | {} = '', pagination = {}, lean = true): Promise<ApplicationLogDto[] | null> {
+  async find(
+    query = {},
+    search = [{}],
+    filter = [{}],
+    pagination = {},
+    projection: string | {} = '-__v',
+    lean = true,
+  ): Promise<ApplicationLogDto[] | []> {
     return this.applicationLogModel
-      .find(filter, projection, pagination)
+      .find(query, projection, pagination)
+      .or(search)
+      .and(filter)
       .lean(lean)
+      .exec();
+  }
+
+  async count(query = {}, search = [{}], filter = [{}]): Promise<number> {
+    return this.applicationLogModel
+      .countDocuments(query)
+      .or(search)
+      .and(filter)
       .exec();
   }
 }

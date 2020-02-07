@@ -38,7 +38,7 @@
    - [x] Provides standardized response to client
    - [x] Provides correlation
 9. Log inspection
-   - [ ] Filter and read logs
+   - [x] Filter and read logs
    - [x] Retention
 10. Administrative application management
     - [ ] Manually clear cache

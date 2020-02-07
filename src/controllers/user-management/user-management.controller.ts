@@ -106,6 +106,7 @@ export class UserManagementController {
   @Get('users')
   @Roles('ADMIN')
   async getUsers(@Pagination() pagination, @Search() find, @Query() query, @Res() res: Response): Promise<Response> {
+    // TODO: add order by
     const filter = query.status ? [{ status: query.status }] : [{}];
     const search = find
       ? [{ name: { $regex: find } }, { surname: { $regex: find } }, { email: { $regex: find } }]
