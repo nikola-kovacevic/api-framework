@@ -18,11 +18,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { Response } from 'express';
 
-import { User } from '../../decorators/user.decorator';
-import { Pagination } from './../../decorators/pagination.decorator';
-import { Roles } from './../../decorators/roles.decorator';
-import { Search } from './../../decorators/search.decorator';
-import { Token } from './../../decorators/token.decorator';
+import { Pagination, Roles, Search, Sort, Token, User } from '../../decorators';
 
 import { RolesGuard } from './../../guards/roles.guard';
 
@@ -105,15 +101,20 @@ export class UserManagementController {
 
   @Get('users')
   @Roles('ADMIN')
-  async getUsers(@Pagination() pagination, @Search() find, @Query() query, @Res() res: Response): Promise<Response> {
-    // TODO: add order by
+  async getUsers(
+    @Pagination() pagination,
+    @Search() find,
+    @Query() query,
+    @Sort() sort,
+    @Res() res: Response,
+  ): Promise<Response> {
     const filter = query.status ? [{ status: query.status }] : [{}];
     const search = find
       ? [{ name: { $regex: find } }, { surname: { $regex: find } }, { email: { $regex: find } }]
       : [{}];
 
     const [users, total] = await Promise.all([
-      this.userService.find({}, search, filter, pagination),
+      this.userService.find({}, search, filter, pagination, sort),
       this.userService.count({}, search, filter),
     ]);
 

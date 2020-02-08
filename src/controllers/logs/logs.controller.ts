@@ -3,9 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { Response } from 'express';
 
-import { Pagination } from './../../decorators/pagination.decorator';
-import { Roles } from './../../decorators/roles.decorator';
-import { Search } from './../../decorators/search.decorator';
+import { Pagination, Roles, Search, Sort } from './../../decorators/';
 
 import { RolesGuard } from './../../guards/roles.guard';
 
@@ -26,16 +24,16 @@ export class LogsController {
     @Pagination() pagination,
     @Search() find,
     @Query() query,
+    @Sort() sort,
     @Res() res: Response,
   ): Promise<Response> {
-    // TODO: add order by
     const filter = query.status ? [{ 'response.status': query.status }] : [{}];
     const search = find
       ? [{ correlation: { $regex: find } }, { 'request.url': { $regex: find } }, { 'client.email': { $regex: find } }]
       : [{}];
 
     const [logs, total] = await Promise.all([
-      this.eventLogService.find({}, search, filter, pagination),
+      this.eventLogService.find({}, search, filter, pagination, sort),
       this.eventLogService.count({}, search, filter),
     ]);
 
@@ -47,15 +45,15 @@ export class LogsController {
   async getApplicationLogs(
     @Pagination() pagination,
     @Search() find,
+    @Sort() sort,
     @Query() query,
     @Res() res: Response,
   ): Promise<Response> {
-    // TODO: add order by
     const filter = query.level && typeof query.level === 'string' ? [{ level: query.level.toLowerCase() }] : [{}];
     const search = find ? [{ message: { $regex: find } }, { hostname: { $regex: find } }] : [{}];
 
     const [logs, total] = await Promise.all([
-      this.applicationLogService.find({}, search, filter, pagination),
+      this.applicationLogService.find({}, search, filter, pagination, sort),
       this.applicationLogService.count({}, search, filter),
     ]);
 

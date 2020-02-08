@@ -17,6 +17,7 @@ export class ApplicationLogService {
     search = [{}],
     filter = [{}],
     pagination = {},
+    sort = { timestamp: 1 },
     projection: string | {} = '-__v',
     lean = true,
   ): Promise<ApplicationLogDto[] | []> {
@@ -24,6 +25,7 @@ export class ApplicationLogService {
       .find(query, projection, pagination)
       .or(search)
       .and(filter)
+      .sort(sort)
       .lean(lean)
       .exec();
   }

@@ -75,7 +75,7 @@ const mongoTransport = new MongoDB({
   db: buildConnectionString(),
   storeHost: true,
   decolorize: true,
-  level: 'debug',
+  level: 'info',
   collection: 'applicationlogs',
   expireAfterSeconds: 864000, // 10 days retention
   metaKey: 'metadata',

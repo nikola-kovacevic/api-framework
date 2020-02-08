@@ -24,6 +24,7 @@ export class UserService {
     search = [{}],
     filter = [{}],
     pagination = {},
+    sort = { createdAt: 1 },
     projection: string | {} = '-password -salt -__v',
     lean = true,
   ): Promise<UserDto[] | []> {
@@ -31,6 +32,7 @@ export class UserService {
       .find(query, projection, pagination)
       .or(search)
       .and(filter)
+      .sort(sort)
       .lean(lean)
       .exec();
   }
