@@ -50,27 +50,25 @@
     - [x] Get the translation from file
     - [x] Returns default language translation if none found
     - [x] Accepts `lang` query param, or `accept-language` header
+13. Recaptcha service
+    - [ ] Recaptcha authentication
 
 ## USED ENVIRONMENT VARIABLES
 
 Core API needs following environment variables to function properly.
 
-| **ENVIRONMENT VARIABLE** | Type   | EXPLANATION                              |
-| ------------------------ | ------ | ---------------------------------------- |
-| **MONGO_URL**            | String | database URL                             |
-| **MONGO_DB_NAME**        | String | database name                            |
-| **MONGO_PASSWORD**       | String | database password                        |
-| **MONGO_USER**           | String | database user                            |
-| **APP_NAME**             | String | application name                         |
-| **REDIS_HOST**           | String | Redis host                               |
-| **REDIS_PORT**           | Number | Redis port                               |
-| **CACHE_TTL**            | Number | Cache time to live, specified in seconds |
-| **ENCRYPTION_KEY**       | String | Encryption key                           |
-| **CONTACT_EMAIL**        | String | Contact email                            |
-| **MG_API_KEY**           | String | Mailgun API key                          |
-| **MG_DOMAIN**            | String | Mailgun domain                           |
-| **RECAPTCHA_KEY**        | String | Google recaptcha key                     |
-| **JWT_PRIVATE_KEY**      | String | JWT private key                          |
-| **FRONTEND_URL**         | String | Frontend URL                             |
-| **NODE_ENV**             | String | Node.js environment                      |
-| **PORT**                 | String | Application port                         |
+| **ENVIRONMENT VARIABLE** | Type   | EXPLANATION          |
+| ------------------------ | ------ | -------------------- |
+| **MONGO_URL**            | String | database URL         |
+| **MONGO_DB_NAME**        | String | database name        |
+| **MONGO_PASSWORD**       | String | database password    |
+| **MONGO_USER**           | String | database user        |
+| **APP_NAME**             | String | application name     |
+| **REDIS_HOST**           | String | Redis host           |
+| **REDIS_PORT**           | Number | Redis port           |
+| **ENCRYPTION_KEY**       | String | Encryption key       |
+| **CONTACT_EMAIL**        | String | Contact email        |
+| **RECAPTCHA_KEY**        | String | Google recaptcha key |
+| **FRONTEND_URL**         | String | Frontend URL         |
+| **NODE_ENV**             | String | Node.js environment  |
+| **PORT**                 | String | Application port     |
