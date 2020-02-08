@@ -60,7 +60,7 @@ class Cache {
     return this.redis.type(key).then(type => (type === 'string' ? this.getString(key) : this.getHash(key)));
   }
 
-  async exists(key: string): Promise<boolean> {
+  async exists(key: string): Promise<boolean | void> {
     if (this.isRedisAvailable && this.isCacheEnabled) {
       const exists = await this.redis.exists(key);
       return exists === 1;
