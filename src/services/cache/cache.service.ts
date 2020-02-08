@@ -26,6 +26,7 @@ class Cache {
   private redis: Redis;
   private reconnectAttempt = 0;
   private isRedisAvailable = false;
+  private isCacheEnabled = true;
 
   private logger = new LoggerService('Redis');
 
@@ -37,27 +38,18 @@ class Cache {
     this.configureRedis();
   }
 
-  clearCache(): void {
-    if (this.isRedisAvailable) {
-      this.redis.flushdb();
+  async clearCache(): Promise<void> {
+    if (this.isRedisAvailable && this.isCacheEnabled) {
+      return this.redis.flushdb();
     }
   }
 
-  async connect(): Promise<unknown> {
-    if (!this.isRedisAvailable) {
-      return this.redis.connect();
-    }
-  }
-
-  async disconnect(): Promise<unknown> {
-    if (this.isRedisAvailable) {
-      this.isRedisAvailable = false;
-      return this.redis.disconnect();
-    }
+  manageCache(isEnabled: boolean): void {
+    this.isCacheEnabled = isEnabled;
   }
 
   async get(key: string, store: () => Promise<unknown>, ttl?: number): Promise<unknown> {
-    if (!(key && this.isRedisAvailable)) {
+    if (!(key && this.isRedisAvailable && this.isCacheEnabled)) {
       return store();
     } else if (!(await this.redis.exists(key))) {
       return store()
@@ -69,12 +61,14 @@ class Cache {
   }
 
   async exists(key: string): Promise<boolean> {
-    const exists = await this.redis.exists(key);
-    return exists === 1;
+    if (this.isRedisAvailable && this.isCacheEnabled) {
+      const exists = await this.redis.exists(key);
+      return exists === 1;
+    }
   }
 
   async delete(key: string): Promise<void> {
-    if (this.isRedisAvailable && (await this.redis.exists(key))) {
+    if (this.isRedisAvailable && this.isCacheEnabled && (await this.redis.exists(key))) {
       await this.redis.del(key);
     }
   }
@@ -140,11 +134,11 @@ class Cache {
   }
 
   private async removeKeys(key: string): Promise<unknown> {
-    if (!key || typeof key !== 'string') {
-      throw new Error('[REDIS][REMOVE KEYS] Key is required, and it has to be a string!');
-    }
+    if (this.isRedisAvailable && this.isCacheEnabled) {
+      if (!key || typeof key !== 'string') {
+        throw new Error('[REDIS][REMOVE KEYS] Key is required, and it has to be a string!');
+      }
 
-    if (this.isRedisAvailable) {
       const keys = await this.redis.keys(key);
       return this.redis.del(...keys);
     }

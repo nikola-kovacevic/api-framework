@@ -41,9 +41,8 @@
    - [x] Filter and read logs
    - [x] Retention
 10. Administrative application management
-    - [ ] Manually clear cache
-    - [ ] Manually connect to Redis
-    - [ ] Manually disconnect from Redis
+    - [x] Manually clear cache
+    - [x] Enable / disable cache
 11. Mail service
     - [ ] Mailgun connection or some other service
     - [ ] Email templates (i.e. activation, system message, password reset)
