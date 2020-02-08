@@ -1,0 +1,8 @@
+{
+  "APPLICATION-IS-NOT-WORKING": "Application is not working as MongoDB is unreachable",
+  "APPLICATION-IS-WORKING": "Application is working and MongoDB connection is established",
+  "AUTHORIZATION-SUCCESSFUL": "Authorization successful",
+  "LIST-OF-COUNTRIES": "List of countries",
+  "REGISTRATION-SUCCESSFUL": "Registration successful",
+  "TOKEN-REFRESHED": "Token refreshed"
+}

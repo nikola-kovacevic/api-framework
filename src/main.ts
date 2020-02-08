@@ -5,6 +5,7 @@ import { NestFactory } from '@nestjs/core';
 import { RotatingFileStream } from 'rotating-file-stream';
 
 import * as helmet from 'helmet';
+import * as i18n from 'i18n';
 import * as mongoose from 'mongoose';
 import * as morgan from 'morgan';
 import * as path from 'path';
@@ -35,8 +36,22 @@ const getErrorData = (error: { message?: {}; stack?: {} }): { ERROR; STACK? } =>
 
 async function bootstrap(): Promise<void> {
   const logger = new LoggerService('ApplicationLoader');
+  const translationLog = new LoggerService('Translation');
   const app = await NestFactory.create(AppModule, { cors: true, logger });
   app.useLogger(app.get(LoggerModule));
+
+  i18n.configure({
+    locales: ['en', 'hr'],
+    defaultLocale: 'en',
+    autoReload: true,
+    preserveLegacyCase: true,
+    objectNotation: true,
+    directory: path.join(__dirname, 'i18n'),
+    queryParameter: 'lang',
+    logDebugFn: message => translationLog.debug(message),
+    logWarnFn: message => translationLog.warn(message),
+    logErrorFn: message => translationLog.error(message),
+  });
 
   const configService = app.get<ConfigService>(ConfigService);
   const port = parseInt(configService.get('PORT'), 10);
@@ -52,6 +67,8 @@ async function bootstrap(): Promise<void> {
 
   app.use(morgan('combined', { stream: accessLogStream() }));
   app.use(helmet());
+
+  app.use(i18n.init);
 
   app.useGlobalPipes(
     new ValidationPipe({

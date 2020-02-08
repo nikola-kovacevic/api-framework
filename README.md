@@ -47,8 +47,9 @@
     - [ ] Mailgun connection or some other service
     - [ ] Email templates (i.e. activation, system message, password reset)
 12. Translate service
-    - [ ] Get the translation from DB or file
-    - [ ] Returns default language translation if none found
+    - [x] Get the translation from file
+    - [x] Returns default language translation if none found
+    - [x] Accepts `lang` query param, or `accept-language` header
 
 ## USED ENVIRONMENT VARIABLES
 
