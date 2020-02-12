@@ -52,11 +52,11 @@ export class UserService {
       .exec();
   }
 
-  async delete(query: object): Promise<{ deletedCount: number } | null> {
+  async delete(query: object): Promise<({ ok?: number; n?: number } & { deletedCount?: number }) | null> {
     return this.userModel.deleteOne(query).exec();
   }
 
-  async createOne(user: UserDto): Promise<SanitizedUser | null> {
+  async createOne(user: Partial<UserDto>): Promise<SanitizedUser | null> {
     const salt = await bcrypt.genSalt(10);
     const password = await bcrypt.hash(user.password, salt);
     const newUser = { ...user, salt, password };

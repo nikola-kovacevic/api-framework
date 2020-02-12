@@ -1,7 +1,6 @@
 import { Document } from 'mongoose';
 
 export interface EventLogDto extends Document {
-  _id?: string;
   correlation: string;
   client: {
     ip: string;

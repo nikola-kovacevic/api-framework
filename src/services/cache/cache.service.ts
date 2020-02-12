@@ -1,7 +1,5 @@
 import { ConfigService } from '@nestjs/config';
 
-import { CacheOptions } from './cache.interface';
-
 import { LoggerService } from './../logger/logger.service';
 
 import * as Redis from 'ioredis';
@@ -23,22 +21,27 @@ const DEFAULT_OPTIONS = {
 };
 
 class Cache {
-  private redis: Redis;
-  private reconnectAttempt = 0;
+  private redis: Redis.Redis;
   private isRedisAvailable = false;
   private isCacheEnabled = true;
 
   private logger = new LoggerService('Redis');
 
-  constructor(options: CacheOptions = {}) {
-    const connection: CacheOptions = { ...DEFAULT_OPTIONS, ...options };
+  constructor(options) {
+    const connection = options && typeof options === 'object' ? { ...DEFAULT_OPTIONS, ...options } : DEFAULT_OPTIONS;
     this.redis = new Redis(connection);
+
     this.addEventListeners();
-    this.enableMonitoring();
-    this.configureRedis();
+    this.configureRedis()
+      .then(() => {
+        this.isRedisAvailable = true;
+        this.enableMonitoring();
+        this.logger.log('Redis configured successfully');
+      })
+      .catch(ex => this.logger.error('Error on Redis configuration', ex));
   }
 
-  async clearCache(): Promise<void> {
+  async clearCache(): Promise<string> {
     if (this.isRedisAvailable && this.isCacheEnabled) {
       return this.redis.flushdb();
     }
@@ -53,7 +56,7 @@ class Cache {
       return store();
     } else if (!(await this.redis.exists(key))) {
       return store()
-        .then(value => this.set(key, value, ttl))
+        .then((value: Redis.ValueType) => this.set(key, value, ttl))
         .catch(ex => this.logger.error(`Error: ${ex.message}`, ex));
     }
 
@@ -86,7 +89,6 @@ class Cache {
 
     this.redis.on('ready', () => {
       this.logger.log('Redis server connection is ready');
-      this.reconnectAttempt = 0;
       this.isRedisAvailable = true;
     });
 
@@ -95,25 +97,17 @@ class Cache {
       this.isRedisAvailable = false;
     });
 
-    this.redis.on('error', async err => {
-      this.logger.error('There was an error while connecting to Redis: ', err);
-      if (this.reconnectAttempt > 5) {
-        return this.redis.disconnect();
-      }
-    });
+    this.redis.on('error', async err => this.logger.error('There was an error while connecting to Redis: ', err));
+    this.redis.on('reconnecting', () => this.logger.log('Reconnecting to Redis server'));
 
-    this.redis.on('reconnecting', () => {
-      this.logger.log(`Reconnecting to Redis server attempt ${this.reconnectAttempt++}`);
-    });
-
-    this.redis.on('end', () => {
-      this.logger.warn('Failed to establish Redis server connection, no more reconnection attempts will be made');
-    });
+    this.redis.on('end', () =>
+      this.logger.warn('Failed to establish Redis server connection, no more reconnection attempts will be made'),
+    );
   }
 
-  private configureRedis(): void {
+  private async configureRedis(): Promise<void> {
     for (const [key, value] of REDIS_CONFIGURATION) {
-      this.redis.config('set', key, value);
+      await this.redis.config('SET', key, value);
     }
   }
 
@@ -153,20 +147,20 @@ class Cache {
     return JSON.parse(data);
   }
 
-  private async set(key: string, value: unknown, ttl?: number): Promise<unknown> {
+  private async set(key: string, value: Redis.ValueType, ttl?: number): Promise<unknown> {
     if (!(key && value)) {
       throw new Error(`[REDIS][SET] Key and value are required! Received key: ${key} and value: ${value}`);
     }
 
     return typeof value === 'object'
       ? this.setHash(key, value, ttl)
-      : this.redis.set(key, value, ...(ttl ? ['ex', ttl] : [])).then(() => value);
+      : this.redis.set(key, value, ttl ? ['ex', ttl] : []).then(() => value);
   }
 
   private async setHash(key: string, value: unknown, ttl?: number): Promise<unknown> {
     await this.redis.hset(key, 'data', JSON.stringify(value));
     if (ttl) {
-      this.redis.expire(key, ttl);
+      await this.redis.expire(key, ttl);
     }
 
     return value;

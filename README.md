@@ -44,7 +44,7 @@
     - [x] Manually clear cache
     - [x] Enable / disable cache
 11. Mail service
-    - [ ] Mailgun connection or some other service
+    - [x] Gmail Nodemailer connection
     - [ ] Email templates (i.e. activation, system message, password reset)
 12. Translate service
     - [x] Get the translation from file

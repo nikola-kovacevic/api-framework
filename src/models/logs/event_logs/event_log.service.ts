@@ -8,7 +8,7 @@ import { EventLogDto } from './event_log.interface';
 export class EventLogService {
   constructor(@InjectModel('EventLog') private eventLogModel: Model<EventLogDto>) {}
 
-  async addLog(eventLog: EventLogDto): Promise<EventLogDto | null> {
+  async addLog(eventLog: Partial<EventLogDto>): Promise<EventLogDto | null> {
     return this.eventLogModel.create(eventLog);
   }
 
