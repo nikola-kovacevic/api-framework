@@ -30,7 +30,7 @@
     "@nestjs/platform-express": "^6.7.2",
     "bcrypt": "^3.0.7",
     "class-transformer": "^0.2.3",
-    "class-validator": "^0.11.0",
+    "class-validator": "^0.14.0",
     "entropy-string": "^4.2.0",
     "helmet": "^3.21.2",
     "i18n": "^0.8.5",
